@@ -1,0 +1,15 @@
+-- كود تفعيل حساب السوبر أدمن
+-- استبدل الايميل بالايميل اللي سجلت بيه
+DECLARE @MyEmail NVARCHAR(256) = '7amrhany@gmail.com'; 
+
+-- 1. تفعيل الحساب
+UPDATE AspNetUsers SET IsActive = 1 WHERE Email = @MyEmail;
+
+-- 2. إعطاء صلاحية SuperAdmin
+DECLARE @UserId NVARCHAR(450) = (SELECT Id FROM AspNetUsers WHERE Email = @MyEmail);
+DECLARE @RoleId NVARCHAR(450) = (SELECT Id FROM AspNetRoles WHERE Name = 'SuperAdmin');
+
+IF NOT EXISTS (SELECT 1 FROM AspNetUserRoles WHERE UserId = @UserId AND RoleId = @RoleId)
+BEGIN
+    INSERT INTO AspNetUserRoles (UserId, RoleId) VALUES (@UserId, @RoleId);
+END
